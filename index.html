@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>釜山 5 晚｜2026.08.30 – 09.04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#132430;
+    --paper:#F2F5F3;
+    --card:#FFFFFF;
+    --line1:#F06A00;   /* 1號線・西面基地 */
+    --donghae:#0065B3; /* 東海線・海雲台基地 */
+    --crab:#C6362B;
+    --mute:#5C6B74;
+    --rule:#D8DFDC;
+    --mono:'IBM Plex Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Noto Sans TC',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.7;
+    font-size:15.5px;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:0 16px;}
+
+  /* ── 頁首（手機緊湊）── */
+  header{background:var(--ink);color:#EAF1F5;padding:26px 0 0;}
+  .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:#7FA8C4;margin-bottom:8px;}
+  h1{font-family:'Noto Serif TC',serif;font-weight:900;font-size:clamp(26px,6vw,44px);line-height:1.15;}
+  h1 .sub{display:block;font-size:clamp(13px,3.2vw,16px);font-weight:600;color:#9DB8CA;margin-top:6px;letter-spacing:.04em;}
+  .fbar{
+    display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;
+    font-family:var(--mono);font-size:12px;color:#C3D4DF;
+    margin:16px 0 18px;
+  }
+  .fbar span:last-child{grid-column:1/-1;}
+  .fbar b{color:#FFF;font-weight:600;}
+
+  /* ── 頁籤列 ── */
+  nav{
+    position:sticky;top:0;z-index:20;
+    background:var(--ink);
+    box-shadow:0 2px 10px rgba(19,36,48,.25);
+  }
+  .tabsbox{position:relative;max-width:860px;margin:0 auto;}
+  .tabs{display:flex;flex-wrap:wrap;padding:0 10px;}
+  .tab{
+    appearance:none;border:0;background:none;cursor:pointer;
+    font-family:'Noto Sans TC',sans-serif;
+    font-size:13.5px;font-weight:700;
+    color:#8FA9BA;
+    padding:11px 8px 9px;
+    min-height:48px; /* 觸控目標 */
+    flex:1 1 auto;
+    text-align:center;
+    border-bottom:4px solid transparent;
+    white-space:nowrap;
+    transition:color .15s;
+  }
+  .tab small{display:block;font-family:var(--mono);font-weight:500;font-size:9.5px;letter-spacing:.08em;margin-top:1px;}
+  .tab:hover{color:#EAF1F5;}
+  .tab:focus-visible{outline:2px solid #7FA8C4;outline-offset:-2px;}
+  .tab[aria-selected="true"]{color:#FFF;}
+  .tab.west[aria-selected="true"]{border-bottom-color:var(--line1);}
+  .tab.east[aria-selected="true"]{border-bottom-color:var(--donghae);}
+  .tab.ov[aria-selected="true"]{border-bottom-color:#EAF1F5;}
+
+  /* ── 面板 ── */
+  .panel{display:none;padding:26px 0 52px;}
+  .panel.active{display:block;animation:fade .22s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .daytag{
+    display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;
+    letter-spacing:.12em;color:#FFF;border-radius:4px;padding:3px 9px;margin-bottom:8px;
+  }
+  .west-bg{background:var(--line1);}
+  .east-bg{background:var(--donghae);}
+  .ink-bg{background:var(--ink);}
+  h2{font-family:'Noto Serif TC',serif;font-weight:900;font-size:23px;margin-bottom:4px;}
+  .lede{color:var(--mute);font-size:14px;margin-bottom:22px;max-width:62ch;}
+  .twd{color:var(--mute);font-size:.92em;}
+
+  /* 時間軸 */
+  .tl{position:relative;padding-left:28px;}
+  .tl::before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:4px;border-radius:2px;background:var(--lc,var(--line1));opacity:.85;}
+  .ev{position:relative;padding-bottom:20px;}
+  .ev:last-child{padding-bottom:4px;}
+  .ev::before{
+    content:'';position:absolute;left:-26px;top:7px;
+    width:13px;height:13px;border-radius:50%;
+    background:#FFF;border:4px solid var(--lc,var(--line1));
+  }
+  .ev .t{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.06em;}
+  .ev h3{font-size:16.5px;font-weight:700;margin:1px 0 3px;}
+  .ev p{font-size:14.5px;max-width:62ch;}
+  .ev .cost{font-family:var(--mono);font-size:12.5px;color:var(--crab);font-weight:600;}
+  /* 交通列 */
+  .go{
+    position:relative;
+    margin:-6px 0 20px;
+    padding:7px 10px 7px 12px;
+    background:#E9EEEB;
+    border-radius:7px;
+    font-size:12.5px;
+    color:#3E4E58;
+    font-family:var(--mono);
+    line-height:1.55;
+  }
+  .go::before{content:'▸ ';color:var(--lc,var(--line1));font-weight:600;}
+
+  .tipbox{margin-top:22px;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;font-size:13.5px;}
+  .tipbox .k{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;color:var(--mute);margin-bottom:6px;}
+  .tipbox b{font-weight:700;}
+  .tipbox ul{list-style:none;}
+  .tipbox li{padding:3px 0 3px 15px;position:relative;}
+  .tipbox li::before{content:'▸';position:absolute;left:0;color:var(--lc,var(--line1));}
+
+  /* 訂位小卡 */
+  .speak{
+    margin-top:14px;
+    background:#FFF8F0;
+    border:1px solid #F0D9BF;
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:13.5px;
+  }
+  .speak .k{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;color:#A9611C;margin-bottom:8px;}
+  .speak .kr{
+    font-size:15.5px;font-weight:700;line-height:1.6;
+    background:#FFF;border:1px dashed #E4C79F;border-radius:8px;
+    padding:10px 12px;margin:6px 0;
+  }
+  .speak .zh{color:var(--mute);font-size:13px;}
+  .speak .tel{font-family:var(--mono);font-size:12.5px;margin-top:6px;}
+
+  /* 總覽 */
+  .ovgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+  .ovcard{
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    padding:13px 14px;font-size:13.5px;cursor:pointer;
+    border-top:4px solid var(--tc,var(--line1));
+  }
+  .ovcard:active{transform:scale(.98);}
+  .ovcard .d{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mute);}
+  .ovcard h3{font-size:15px;font-weight:700;margin:2px 0 1px;}
+  .ovcard p{color:var(--mute);font-size:12.5px;line-height:1.5;}
+  /* 美食卡片（取代表格，手機不跑版） */
+  .foods{display:grid;grid-template-columns:1fr;gap:10px;}
+  @media(min-width:680px){.foods{grid-template-columns:1fr 1fr;}}
+  .food{
+    background:var(--card);border:1px solid var(--rule);border-radius:10px;
+    padding:12px 14px;
+  }
+  .food .row1{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+  .food .nm{font-weight:700;font-size:15px;min-width:0;}
+  .food .loc{
+    flex:none;font-family:var(--mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.08em;color:#FFF;background:var(--mute);
+    border-radius:4px;padding:2px 7px;
+  }
+  .food .desc{font-size:12.5px;color:var(--mute);margin:3px 0 6px;line-height:1.55;}
+  .food .pr{
+    font-family:var(--mono);color:var(--crab);font-weight:600;
+    font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    border-top:1px dashed var(--rule);padding-top:6px;
+  }
+  .small{font-size:12px;color:var(--mute);}
+  .check{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+  @media(min-width:620px){.check{grid-template-columns:1fr 1fr;}}
+  .ck{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:12px 14px;font-size:13px;}
+  .ck .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;margin-bottom:4px;font-weight:600;}
+  .ck.do .k{color:#1E7A46;}
+  .ck.skip .k{color:var(--mute);}
+  .ck.warn .k{color:var(--crab);}
+  .passbox{
+    background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--donghae);
+    border-radius:10px;padding:14px 16px;font-size:13.5px;margin-bottom:22px;
+  }
+  .passbox .k{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;color:var(--donghae);margin-bottom:6px;}
+  .passbox b{font-weight:700;}
+  h4.sec{font-family:'Noto Serif TC',serif;font-weight:900;font-size:18px;margin:28px 0 10px;}
+
+  footer{padding:18px 0 40px;font-size:11.5px;color:var(--mute);font-family:var(--mono);border-top:1px solid var(--rule);}
+
+  @media(prefers-reduced-motion:reduce){.panel.active{animation:none;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">TPE ⇄ PUS · TIGERAIR · 2 ADT · TIGERSMART</div>
+    <h1>釜山 5 晚<span class="sub">2026.08.30（日）— 09.04（五）｜西線 → 東線 雙基地</span></h1>
+    <div class="fbar">
+      <span>去程 <b>IT606</b><br>08/30 16:40→19:55</span>
+      <span>回程 <b>IT607</b><br>09/04 21:05→22:25</span>
+      <span>總價 <b>TWD 15,370</b> / 2 人（含稅）｜匯率概算 ₩1,000 ≈ NT$23</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="tabsbox">
+  <div class="tabs" role="tablist" aria-label="每日行程">
+    <button class="tab ov"   role="tab" aria-selected="true"  aria-controls="p-ov" id="t-ov">總覽<small>OVERVIEW</small></button>
+    <button class="tab west" role="tab" aria-selected="false" aria-controls="p-d1" id="t-d1">Day 1<small>08/30 日</small></button>
+    <button class="tab west" role="tab" aria-selected="false" aria-controls="p-d2" id="t-d2">Day 2<small>08/31 一</small></button>
+    <button class="tab west" role="tab" aria-selected="false" aria-controls="p-d3" id="t-d3">Day 3<small>09/01 二</small></button>
+    <button class="tab east" role="tab" aria-selected="false" aria-controls="p-d4" id="t-d4">Day 4<small>09/02 三</small></button>
+    <button class="tab east" role="tab" aria-selected="false" aria-controls="p-d5" id="t-d5">Day 5<small>09/03 四</small></button>
+    <button class="tab east" role="tab" aria-selected="false" aria-controls="p-d6" id="t-d6">Day 6<small>09/04 五</small></button>
+  </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ══ 總覽 ══ -->
+  <section class="panel active" id="p-ov" role="tabpanel" aria-labelledby="t-ov">
+    <span class="daytag ink-bg">OVERVIEW</span>
+    <h2>六天結構</h2>
+    <p class="lede">前 2 晚西面、後 3 晚海雲台。橘＝西面基地（1 號線），藍＝海雲台基地（東海線）。點卡片直達當日。</p>
+
+    <div class="ovgrid">
+      <div class="ovcard" style="--tc:var(--line1)" data-go="t-d1"><div class="d">D1 · 08/30</div><h3>落地・西面烤肉</h3><p>19:55 落地，首餐鹽烤豬</p></div>
+      <div class="ovcard" style="--tc:var(--line1)" data-go="t-d2"><div class="d">D2 · 08/31</div><h3>甘川洞 → 札嘎其</h3><p>山城＋海鮮市場</p></div>
+      <div class="ovcard" style="--tc:var(--line1)" data-go="t-d3"><div class="d">D3 · 09/01</div><h3>換宿・海雲台烤牛</h3><p>轉乘東線，岩牛排骨</p></div>
+      <div class="ovcard" style="--tc:var(--donghae)" data-go="t-d4"><div class="d">D4 · 09/02</div><h3>龍宮寺・樂天・機張蟹</h3><p>Pass 開卡日，強度最高</p></div>
+      <div class="ovcard" style="--tc:var(--donghae)" data-go="t-d5"><div class="d">D5 · 09/03</div><h3>膠囊列車・汗蒸幕</h3><p>必去雙點＋廣安里夜景</p></div>
+      <div class="ovcard" style="--tc:var(--donghae)" data-go="t-d6"><div class="d">D6 · 09/04</div><h3>收尾・返程</h3><p>19:00 前抵金海</p></div>
+    </div>
+
+    <div class="passbox">
+      <div class="k">VISIT BUSAN PASS · 精算</div>
+      <b>建議買 24H Pass（Klook/KKday 約 NT$1,289/人，比官網便宜）</b>，Day 4 上午在樂天世界開卡。<br>
+      精算：樂天門票原價 ₩47,000<span class="twd">（≈NT$1,080）</span>＋ Day 5 早上 10:30 前搭海岸列車回程 ₩7,000<span class="twd">（≈NT$160）</span>＝ 基本打平；若 Day 4 晚回程順路加 Spa Land（₩23,000<span class="twd">≈NT$530</span>）就是淨賺。<br>
+      <b>注意：天空膠囊列車不在 Pass 內</b>——Pass 只含地面層「海岸列車」，膠囊要另購且務必提前線上預約。
+    </div>
+
+    <h4 class="sec">美食目標與行情</h4>
+    <div class="foods">
+      <div class="food">
+        <div class="row1"><span class="nm">맛찬들왕소금구이</span><span class="loc">西面</span></div>
+        <div class="desc">厚切鹽烤豬・店員代烤・4.3★</div>
+        <div class="pr">中價位</div>
+      </div>
+      <div class="food">
+        <div class="row1"><span class="nm">설야멱 西面店</span><span class="loc">西面</span></div>
+        <div class="desc">熟成烤肉・4.9★・開到凌晨 00:30</div>
+        <div class="pr">中高價位</div>
+      </div>
+      <div class="food">
+        <div class="row1"><span class="nm">海雲台岩牛排骨</span><span class="loc">海雲台</span></div>
+        <div class="desc">烤牛排骨・米其林入選・需訂位</div>
+        <div class="pr">₩150,000/2人（≈NT$3,450）</div>
+      </div>
+      <div class="food">
+        <div class="row1"><span class="nm">機張市場</span><span class="loc">機張</span></div>
+        <div class="desc">帝王蟹・紅蟹＋蟹膏炒飯・比札嘎其低 15–25%</div>
+        <div class="pr">₩65,000/kg（≈NT$1,495）</div>
+      </div>
+      <div class="food">
+        <div class="row1"><span class="nm">札嘎其市場</span><span class="loc">南浦</span></div>
+        <div class="desc">活海鮮代工體驗（海膽、貝類、鰻魚）</div>
+        <div class="pr">觀光溢價・先問價再秤重</div>
+      </div>
+      <div class="food">
+        <div class="row1"><span class="nm">西面豬肉湯飯街</span><span class="loc">西面</span></div>
+        <div class="desc">豬肉湯飯・早餐最對</div>
+        <div class="pr">₩9,000–10,000（≈NT$205–230）</div>
+      </div>
+      <div class="food">
+        <div class="row1"><span class="nm">廣安里橫檀街</span><span class="loc">廣安里</span></div>
+        <div class="desc">韓式厚切生魚片＋廣安大橋夜景</div>
+        <div class="pr">中高價位</div>
+      </div>
+    </div>
+
+    <h4 class="sec">入境與行前</h4>
+    <div class="check">
+      <div class="ck do"><div class="k">DO · 必辦</div><b>e-Arrival Card</b>：起飛前 72 小時內官網填（免費），QR 截圖，兩人各填。<br><b>膠囊列車預約</b>：確定 Day 5 時段後立刻線上預約（官網/Klook），旺季秒殺。</div>
+      <div class="ck do"><div class="k">DO · 建議</div><b>SeS 自動通關</b>：落地現場註冊，免費，之後全韓機場適用。<br><b>24H 釜山 Pass</b>：Klook/KKday 先買好，Day 4 樂天開卡。</div>
+      <div class="ck skip"><div class="k">SKIP · 不用辦</div><b>K-ETA</b> 台灣豁免至 2026/12/31；<b>Q-Code</b> 直飛無症狀免填。代辦網站一律無視。</div>
+      <div class="ck warn"><div class="k">WARN · 紅線</div>豬肉製品禁入韓（初犯罰 ₩500 萬 ≈ NT$11.5 萬）；行動電源隨身＋Wh 標示；護照效期 ≥6 個月。</div>
+    </div>
+  </section>
+
+  <!-- ══ Day 1 ══ -->
+  <section class="panel" id="p-d1" role="tabpanel" aria-labelledby="t-d1" style="--lc:var(--line1)">
+    <span class="daytag west-bg">DAY 1 · 08/30（日）· 西面基地</span>
+    <h2>落地・西面首餐</h2>
+    <p class="lede">晚班抵達日，目標兩個：順暢進市區、吃到第一餐烤肉。不排景點。</p>
+    <div class="tl">
+      <div class="ev"><div class="t">16:40 → 19:55</div><h3>IT606 桃園 → 金海</h3><p>入境走人工通道（首次），出關前順路辦 SeS 自動通關註冊——5 分鐘。</p></div>
+      <div class="go">金海機場 → 西面｜輕軌（機場站→沙上）轉 2 號線 · 全程約 40 分 · T-money 約 ₩1,700/人（≈NT$39）。便利商店買卡＋加值。</div>
+      <div class="ev"><div class="t">21:10</div><h3>西面 Check-in</h3><p>放行李，覓食圈就在住宿周邊步行 10 分內。</p></div>
+      <div class="ev"><div class="t">21:30</div><h3>晚餐：맛찬들왕소금구이（鹽烤豬）</h3><p>厚切五花、店員代烤，營業至 23:00。<span class="cost">中價位</span></p></div>
+      <div class="ev"><div class="t">23:00＋</div><h3>加場（選配）：설야멱 熟成烤肉</h3><p>4.9★，開到凌晨 00:30。體力允許再上。</p></div>
+    </div>
+    <div class="tipbox"><div class="k">NOTES</div>
+      <ul>
+        <li>e-Arrival Card <b>起飛前 72 小時內</b>填好，QR 截圖存兩人手機。</li>
+        <li>換錢：市區換錢所匯率優於機場，今晚刷卡＋小額提領即可。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ Day 2 ══ -->
+  <section class="panel" id="p-d2" role="tabpanel" aria-labelledby="t-d2" style="--lc:var(--line1)">
+    <span class="daytag west-bg">DAY 2 · 08/31（一）· 西面基地</span>
+    <h2>甘川洞 → 札嘎其</h2>
+    <p class="lede">西線經典一日：上午山城、下午港區、晚餐海鮮。體力消耗最大的觀光日排最前面。</p>
+    <div class="tl">
+      <div class="ev"><div class="t">08:00</div><h3>早餐：西面豬肉湯飯街</h3><p>釜山靈魂食物。<span class="cost">₩9,000–10,000 ≈ NT$205–230</span></p></div>
+      <div class="go">西面 → 甘川洞｜1 號線至土城站（約 15 分・₩1,600/人 ≈ NT$37）→ 6 號出口轉 1-1 或 2-2 小巴上山（約 10 分・₩1,200/人 ≈ NT$28，T-money 可刷）</div>
+      <div class="ev"><div class="t">09:30–12:30</div><h3>甘川洞文化村</h3><p>先衝小王子雕像再逛巷弄。入口地圖蓋章版 ₩2,000<span class="twd">（≈NT$46）</span>。9 月初仍 30 度上下，帶水。</p></div>
+      <div class="go">甘川洞 → 札嘎其｜下山攔計程車直達 · 約 15 分 · 約 ₩6,000–8,000（≈NT$140–185）。回程順路，比等小巴省 30 分鐘。</div>
+      <div class="ev"><div class="t">13:00–17:00</div><h3>札嘎其市場＋南浦洞</h3><p>午餐在市場解決，下午逛 BIFF 廣場、國際市場。</p></div>
+      <div class="ev"><div class="t">17:30</div><h3>晚餐：札嘎其一樓挑貨、二樓代工</h3><p>海膽、貝類、鰻魚體驗價值高；<b>蟹留給 Day 4 機張</b>（便宜 15–25%）。秤重前確認每 kg 單價＋代工費。</p></div>
+      <div class="go">札嘎其 → 西面｜1 號線直達 · 約 20 分 · ₩1,600/人（≈NT$37）</div>
+      <div class="ev"><div class="t">20:00</div><h3>回西面休息</h3></div>
+    </div>
+    <div class="tipbox"><div class="k">NOTES</div>
+      <ul>
+        <li>甘川洞是住宅區，巷弄放低音量。</li>
+        <li>明天要退房：今晚先把行李收一半。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ Day 3 ══ -->
+  <section class="panel" id="p-d3" role="tabpanel" aria-labelledby="t-d3" style="--lc:var(--line1)">
+    <span class="daytag west-bg">DAY 3 · 09/01（二）· 換宿日 → 海雲台</span>
+    <h2>轉乘日・海雲台烤牛</h2>
+    <p class="lede">上午搬家、下午海灘降速，晚餐是全程最高規格的一餐。</p>
+    <div class="tl">
+      <div class="ev"><div class="t">10:00</div><h3>西面退房</h3></div>
+      <div class="go">西面 → 海雲台｜2 號線直達 · 約 30 分 · ₩1,600/人（≈NT$37）。帶行李避開 07:30–09:00 通勤尖峰。</div>
+      <div class="ev"><div class="t">10:45</div><h3>海雲台住宿寄放行李</h3></div>
+      <div class="ev"><div class="t">11:30</div><h3>午餐：小麥冷麵（밀면）</h3><p>釜山限定的韓戰平民冷麵，海雲台名店密度高。<span class="cost">約 ₩8,000–10,000 ≈ NT$185–230</span></p></div>
+      <div class="ev"><div class="t">13:00–16:00</div><h3>海雲台海水浴場</h3><p>8 月底還能下水；或純散步。</p></div>
+      <div class="ev"><div class="t">16:30</div><h3>抽號／報到：해운대암소갈비집</h3><p><b>沒訂位務必 16:30 前到場抽號</b>，晚餐 18:00 開跑。店在海邊路上，海灘走過去 10 分內。</p></div>
+      <div class="ev"><div class="t">18:00</div><h3>晚餐：烤牛排骨</h3><p>醃製／原味各一輪，配冷湯與燒酒。<span class="cost">約 ₩150,000/2 人 ≈ NT$3,450</span></p></div>
+      <div class="ev"><div class="t">20:30</div><h3>海邊散步 → 正式 Check-in</h3><p>今晚早睡，Day 4 是強度最高日。</p></div>
+    </div>
+    <div class="speak">
+      <div class="k">🗣 請住宿櫃檯代訂・岩牛排骨（給櫃檯看這段）</div>
+      <div class="kr">안녕하세요, 죄송하지만 식당 예약 좀 도와주시겠어요?<br>「해운대암소갈비집」 오늘 저녁 6시, 2명 부탁드립니다. 감사합니다!</div>
+      <div class="zh">（你好，不好意思，能幫我們訂餐廳嗎？「海雲台岩牛排骨店」今天晚上 6 點、2 位。謝謝！）</div>
+      <div class="tel">☎ +82 51-746-0033｜若客滿改問明天（내일）同時段</div>
+    </div>
+    <div class="tipbox"><div class="k">NOTES</div>
+      <ul>
+        <li>最理想是 <b>Day 1–2 就先請西面住宿櫃檯打這通電話</b>預約 Day 3 晚。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ Day 4 ══ -->
+  <section class="panel" id="p-d4" role="tabpanel" aria-labelledby="t-d4" style="--lc:var(--donghae)">
+    <span class="daytag east-bg">DAY 4 · 09/02（三）· 東海線主場 · PASS 開卡日</span>
+    <h2>龍宮寺 → 樂天世界 → 機張蟹</h2>
+    <p class="lede">三個點疊在同一區（Osiria／機張），全行程效率最高的一天。24H 釜山 Pass 在樂天入園時開卡。</p>
+    <div class="tl">
+      <div class="ev"><div class="t">07:45</div><h3>出發</h3></div>
+      <div class="go">海雲台 → 龍宮寺｜東海線（新海雲台→OSIRIA 站，約 12 分・₩1,600 ≈ NT$37）→ OSIRIA 站轉計程車約 5 分（約 ₩5,000 ≈ NT$115）或步行 25 分</div>
+      <div class="ev"><div class="t">08:15–10:00</div><h3>海東龍宮寺</h3><p>海岸懸崖寺廟，08:30 前抵達避團客。免門票。</p></div>
+      <div class="go">龍宮寺 → 樂天世界｜計程車約 5 分（約 ₩5,000 ≈ NT$115）</div>
+      <div class="ev"><div class="t">10:30</div><h3>樂天世界釜山・Pass 開卡入園</h3><p>平日 10:00–20:00。開學後平日排隊 10–20 分鐘等級，Giant Digger 先衝。門票原價 ₩47,000<span class="twd">（≈NT$1,080）</span>——<b>用 Pass 免費，這一刷就近回本</b>。</p></div>
+      <div class="go">樂天世界 → 機張市場｜計程車約 15 分 · 約 ₩10,000–13,000（≈NT$230–300）；或 OSIRIA 站搭東海線至機張站（約 10 分）＋步行 8 分</div>
+      <div class="ev"><div class="t">18:00</div><h3>晚餐：機張蟹</h3><p>帝王蟹 ₩65,000/kg 級<span class="twd">（≈NT$1,495）</span>；<b>紅蟹 CP 值常勝</b>。兩人 1.5–2kg，蟹膏炒飯 ₩6,000<span class="twd">（≈NT$140）</span>收尾。<span class="cost">合計約 ₩130,000–160,000 ≈ NT$3,000–3,680 / 2 人</span></p></div>
+      <div class="go">機張 → 海雲台｜東海線直達 · 約 20 分 · ₩1,600（≈NT$37）。體力有餘者中途 Centum City 站下車進 Spa Land（Pass 免費、限 4 小時），泡完再回海雲台。</div>
+      <div class="ev"><div class="t">20:30</div><h3>返回海雲台</h3></div>
+    </div>
+    <div class="speak">
+      <div class="k">🗣 叫車小卡（給櫃檯或直接攔車出示）</div>
+      <div class="kr">기장시장까지 가 주세요.（請到機張市場）<br>롯데월드 부산으로 가 주세요.（請到釜山樂天世界）</div>
+      <div class="zh">請櫃檯叫車：택시 좀 불러 주시겠어요?（能幫我們叫計程車嗎？）</div>
+    </div>
+    <div class="tipbox"><div class="k">NOTES</div>
+      <ul>
+        <li>樂園體感 5–6 小時足夠，不必待到閉園。</li>
+        <li>市場守則：<b>秤重前確認每 kg 單價＋代工費總額</b>。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ Day 5 ══ -->
+  <section class="panel" id="p-d5" role="tabpanel" aria-labelledby="t-d5" style="--lc:var(--donghae)">
+    <span class="daytag east-bg">DAY 5 · 09/03（四）· 必去雙點日</span>
+    <h2>膠囊列車 → 汗蒸幕 → 廣安里</h2>
+    <p class="lede">你的兩個必去排在同一天：上午天空膠囊列車（需預約），下午 Spa Land 汗蒸幕，晚上廣安里生魚片配大橋夜景。</p>
+    <div class="tl">
+      <div class="go">海雲台住宿 → 尾浦站（Blueline 起點）｜沿海灘步行約 15–20 分，或計程車 5 分（約 ₩4,800 ≈ NT$110）</div>
+      <div class="ev"><div class="t">09:30</div><h3>★ 天空膠囊列車：尾浦 → 青沙浦</h3><p>搭首班避排隊。2 人 1 車廂單程約 ₩35,000<span class="twd">（≈NT$805，以官網為準）</span>。<b>不含在釜山 Pass 內、務必提前線上預約</b>（官網或 Klook），旺季熱門時段秒殺。青沙浦端喫紅白燈塔＋海景咖啡。</p></div>
+      <div class="ev"><div class="t">11:00</div><h3>海岸列車：青沙浦 → 尾浦（回程）</h3><p>地面層大車廂，<b>Pass 免費</b>（單買 ₩7,000<span class="twd">≈NT$160</span>）。若 Pass 是 Day 4 10:30 開卡，10:30 前搭完剛好壓線；過時就單買，金額小。</p></div>
+      <div class="ev"><div class="t">12:00</div><h3>午餐：海雲台市場</h3><p>魚糕、餃子、烤貝隨便吃。<span class="cost">約 ₩15,000–20,000/2人 ≈ NT$345–460</span></p></div>
+      <div class="go">海雲台 → Spa Land｜2 號線至 Centum City 站（約 8 分・₩1,600 ≈ NT$37），新世界百貨 1 樓直結</div>
+      <div class="ev"><div class="t">14:00–17:30</div><h3>★ Spa Land 汗蒸幕（新世界 Centum City）</h3><p>18 池溫泉＋13 主題汗蒸房＋戶外足湯，釜山天花板等級。門票約 ₩23,000<span class="twd">（≈NT$530，平日）</span>、限時 4 小時。館內泡麵＋甜米露是儀式感必點。</p></div>
+      <div class="go">Centum City → 廣安里｜2 號線至廣安站（約 10 分・₩1,600 ≈ NT$37）＋步行 10 分到海灘</div>
+      <div class="ev"><div class="t">18:30</div><h3>晚餐：橫檀街韓式厚切生魚片</h3><p>沿岸膾店選看得到橋的座位。活魚現殺、厚切邏輯與日式不同。<span class="cost">中高價位</span></p></div>
+      <div class="ev"><div class="t">20:00</div><h3>廣安大橋夜景收尾</h3><p>橋體燈光每晚開；無人機秀只在週六（今天週四沒有）。</p></div>
+      <div class="go">廣安里 → 海雲台｜2 號線 · 約 15 分 · ₩1,600（≈NT$37）</div>
+    </div>
+    <div class="speak">
+      <div class="k">🗣 請櫃檯協助預約膠囊列車（線上被搶光時的備援）</div>
+      <div class="kr">블루라인파크 스카이캡슐 예약을 도와주시겠어요?<br>내일 오전 9시 30분쯤, 2명（캡슐 1대）부탁드립니다.</div>
+      <div class="zh">（能幫我們預約 Blueline Park 天空膠囊嗎？明天上午 9:30 左右、2 位（1 台膠囊）。）</div>
+    </div>
+    <div class="tipbox"><div class="k">NOTES</div>
+      <ul>
+        <li>膠囊列車面海側視野最好；去程膠囊、回程海岸列車是標準玩法（兩種車體驗一次收）。</li>
+        <li>Spa Land 需著館內服（含在門票）；<b>刺青者可能被要求遮蓋</b>，有需要帶貼布。</li>
+        <li>明天退房：今晚抓行李重量，<b>托運 20kg/人</b> 的餘裕算清楚。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══ Day 6 ══ -->
+  <section class="panel" id="p-d6" role="tabpanel" aria-labelledby="t-d6" style="--lc:var(--donghae)">
+    <span class="daytag east-bg">DAY 6 · 09/04（五）· 返程日</span>
+    <h2>收尾・返程</h2>
+    <p class="lede">回程 21:05 起飛，最後一天完整可用。唯一硬約束：19:00 前抵金海機場。</p>
+    <div class="tl">
+      <div class="ev"><div class="t">10:00</div><h3>退房、行李寄放飯店</h3></div>
+      <div class="ev"><div class="t">10:30–16:30</div><h3>最後巡禮</h3><p>三進魚糕買伴手禮（真空包可帶）、最後一碗豬肉湯飯，或西面／樂天百貨補貨。</p></div>
+      <div class="ev"><div class="t">17:00</div><h3>取行李 → 出發金海機場</h3></div>
+      <div class="go">海雲台 → 金海機場｜計程車走市區快速道路約 40–50 分 · 約 ₩35,000–45,000（≈NT$805–1,035）；省錢版：2 號線至沙上轉輕軌約 70 分 · ₩1,700/人（≈NT$39）。帶行李建議直接叫車，兩人分攤與時間價值划算。</div>
+      <div class="ev"><div class="t">19:00</div><h3>抵金海・台虎報到托運</h3><p>行李超重現場補買最貴，前一晚就抓好重量。</p></div>
+      <div class="ev"><div class="t">21:05 → 22:25</div><h3>IT607 金海 → 桃園</h3><p>落地 22:25，領行李約 23:00。<b>機場捷運 A1 末班很緊</b>——出關快就衝捷運，不行走備案。</p></div>
+    </div>
+    <div class="speak">
+      <div class="k">🗣 請櫃檯叫車去機場</div>
+      <div class="kr">택시 좀 불러 주시겠어요? 김해공항 국제선까지 갑니다.<br>오후 5시에 출발하고 싶습니다.</div>
+      <div class="zh">（能幫我們叫計程車嗎？到金海機場國際線。想下午 5 點出發。）</div>
+    </div>
+    <div class="tipbox"><div class="k">桃園落地後交通備案</div>
+      <ul>
+        <li>客運深夜班次往台北市區，班距較長。</li>
+        <li>計程車回板橋約 NT$1,100–1,300；或事先預約機場接送（費用相近、免等）。</li>
+        <li>紅線再提醒：<b>豬肉製品（肉鬆、含肉泡麵）絕對不帶回台</b>。</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">IT606 / IT607 · tigersmart · TWD 15,370 (2 ADT) · 匯率概算 ₩1,000≈NT$23 · 價格以現場/官網為準 · 2026-07 編製</div>
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  function activate(id){
+    tabs.forEach(t=>{
+      const on = t.id === id;
+      t.setAttribute('aria-selected', on);
+      if(on) t.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+    });
+    panels.forEach(p=>{
+      p.classList.toggle('active', p.getAttribute('aria-labelledby') === id);
+    });
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  tabs.forEach(t=>t.addEventListener('click', ()=>activate(t.id)));
+  document.querySelector('.tabs').addEventListener('keydown', e=>{
+    if(e.key!=='ArrowRight' && e.key!=='ArrowLeft') return;
+    const arr=[...tabs];
+    const i=arr.findIndex(t=>t.getAttribute('aria-selected')==='true');
+    const n=e.key==='ArrowRight' ? (i+1)%arr.length : (i-1+arr.length)%arr.length;
+    arr[n].focus(); activate(arr[n].id);
+  });
+  document.querySelectorAll('.ovcard').forEach(c=>{
+    c.addEventListener('click', ()=>activate(c.dataset.go));
+  });
+  // 手機滑動切換頁籤
+  let sx=null;
+  document.querySelector('main').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  document.querySelector('main').addEventListener('touchend',e=>{
+    if(sx===null) return;
+    const dx=e.changedTouches[0].clientX - sx; sx=null;
+    if(Math.abs(dx)<70) return;
+    const arr=[...tabs];
+    const i=arr.findIndex(t=>t.getAttribute('aria-selected')==='true');
+    const n=dx<0 ? Math.min(i+1,arr.length-1) : Math.max(i-1,0);
+    if(n!==i) activate(arr[n].id);
+  },{passive:true});
+</script>
+
+</body>
+</html>
