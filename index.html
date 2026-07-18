@@ -189,6 +189,17 @@
   .passbox b{font-weight:700;}
   h4.sec{font-family:'Noto Serif TC',serif;font-weight:900;font-size:18px;margin:28px 0 10px;}
 
+  /* 天氣 */
+  .wxbox{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;margin-bottom:22px;}
+  .wxbox .k{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;color:var(--mute);margin-bottom:10px;}
+  .wxgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px;}
+  .wxd{text-align:center;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:8px 4px;font-size:12.5px;line-height:1.5;}
+  .wxd .dt{font-family:var(--mono);font-size:10.5px;color:var(--mute);}
+  .wxd .ic{font-size:22px;line-height:1.4;}
+  .wxd .tp{font-weight:700;}
+  .wxd .hm{font-family:var(--mono);font-size:10.5px;color:var(--mute);}
+  .wxchip{float:right;font-family:var(--mono);font-size:12px;background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:3px 8px;color:var(--mute);}
+
   footer{padding:18px 0 40px;font-size:11.5px;color:var(--mute);font-family:var(--mono);border-top:1px solid var(--rule);}
 
   @media(prefers-reduced-motion:reduce){.panel.active{animation:none;}}
@@ -226,6 +237,10 @@
   <!-- ══ 總覽 ══ -->
   <section class="panel active" id="p-ov" role="tabpanel" aria-labelledby="t-ov">
     <span class="daytag ink-bg">OVERVIEW</span>
+    <div class="wxbox">
+      <div class="k">☁️ 釜山天氣 · 08/30–09/05<span id="wxnow"></span></div>
+      <div class="wxgrid" id="wxgrid"><div class="wxd">載入中…</div></div>
+    </div>
     <h2>七天結構</h2>
     <p class="lede">前 3 晚西面、後 3 晚海雲台。橘＝西面基地（1 號線），藍＝海雲台基地（東海線）。點卡片直達當日。</p>
 
@@ -309,7 +324,7 @@
 
   <!-- ══ Day 1 ══ -->
   <section class="panel" id="p-d1" role="tabpanel" aria-labelledby="t-d1" style="--lc:var(--line1)">
-    <span class="daytag west-bg">DAY 1 · 08/30（日）· 西面基地</span>
+    <span class="wxchip" data-wxdate="2026-08-30">––</span><span class="daytag west-bg">DAY 1 · 08/30（日）· 西面基地</span>
     <h2>落地・西面首餐</h2>
     <p class="lede">晚班抵達日，目標兩個：順暢進市區、吃到第一餐烤肉。不排景點。</p>
     <div class="tl">
@@ -330,7 +345,7 @@
 
   <!-- ══ Day 2 ══ -->
   <section class="panel" id="p-d2" role="tabpanel" aria-labelledby="t-d2" style="--lc:var(--line1)">
-    <span class="daytag west-bg">DAY 2 · 08/31（一）· 西面基地</span>
+    <span class="wxchip" data-wxdate="2026-08-31">––</span><span class="daytag west-bg">DAY 2 · 08/31（一）· 西面基地</span>
     <h2>甘川洞 → 南浦・札嘎其</h2>
     <p class="lede">度假節奏：10:00 湯飯開場、中午前上山，下午南浦掃街小吃，晚餐札嘎其代工，回西面收宵夜場。</p>
     <div class="tl">
@@ -354,7 +369,7 @@
 
   <!-- ══ Day 3 ══ -->
   <section class="panel" id="p-d3" role="tabpanel" aria-labelledby="t-d3" style="--lc:var(--line1)">
-    <span class="daytag west-bg">DAY 3 · 09/01（二）· 西面基地</span>
+    <span class="wxchip" data-wxdate="2026-09-01">––</span><span class="daytag west-bg">DAY 3 · 09/01（二）· 西面基地</span>
     <h2>松島纜車 → 影島海崖</h2>
     <p class="lede">睡飽再出門：10:30 冷麵開場，下午松島跨海纜車＋影島白淺灘（體力夠加太宗台），晚上回西面吃熟成烤肉、收在燒酒場。</p>
     <div class="tl">
@@ -380,7 +395,7 @@
 
   <!-- ══ Day 4 ══ -->
   <section class="panel" id="p-d4" role="tabpanel" aria-labelledby="t-d4" style="--lc:var(--line1)">
-    <span class="daytag west-bg">DAY 4 · 09/02（三）· 換宿日 → 海雲台</span>
+    <span class="wxchip" data-wxdate="2026-09-02">––</span><span class="daytag west-bg">DAY 4 · 09/02（三）· 換宿日 → 海雲台</span>
     <h2>轉乘日・海雲台烤牛</h2>
     <p class="lede">退房後行李寄櫃檯，先在西面闖一場 Running Man 再搬家；下午自由降速（海灘只是備案），晚餐是全程最高規格的一餐。</p>
     <div class="tl">
@@ -412,7 +427,7 @@
 
   <!-- ══ Day 5 ══ -->
   <section class="panel" id="p-d5" role="tabpanel" aria-labelledby="t-d5" style="--lc:var(--donghae)">
-    <span class="daytag east-bg">DAY 5 · 09/03（四）· 東海線主場</span>
+    <span class="wxchip" data-wxdate="2026-09-03">––</span><span class="daytag east-bg">DAY 5 · 09/03（四）· 東海線主場</span>
     <h2>龍宮寺 → 樂天世界 → 機張蟹</h2>
     <p class="lede">三個點疊在同一區（Osiria／機張），全行程效率最高的一天。樂天出示 BIG 5 Pass QR 直接入園。</p>
     <div class="tl">
@@ -442,7 +457,7 @@
 
   <!-- ══ Day 6 ══ -->
   <section class="panel" id="p-d6" role="tabpanel" aria-labelledby="t-d6" style="--lc:var(--donghae)">
-    <span class="daytag east-bg">DAY 6 · 09/04（五）· 必去雙點日</span>
+    <span class="wxchip" data-wxdate="2026-09-04">––</span><span class="daytag east-bg">DAY 6 · 09/04（五）· 必去雙點日</span>
     <h2>膠囊列車 → 汗蒸幕 → 廣安里</h2>
     <p class="lede">你的兩個必去排在同一天：11:00 膠囊列車出發（睡飽版），午後 Spa Land 汗蒸幕，晚上廣安里厚切生魚片配大橋夜景，宵夜烤貝收尾。</p>
     <div class="tl">
@@ -476,7 +491,7 @@
 
   <!-- ══ Day 7 ══ -->
   <section class="panel" id="p-d7" role="tabpanel" aria-labelledby="t-d7" style="--lc:var(--donghae)">
-    <span class="daytag east-bg">DAY 7 · 09/05（六）· 返程日</span>
+    <span class="wxchip" data-wxdate="2026-09-05">––</span><span class="daytag east-bg">DAY 7 · 09/05（六）· 返程日</span>
     <h2>收尾・返程</h2>
     <p class="lede">回程 21:05 起飛，最後一天完整可用。唯一硬約束：19:00 前抵金海機場。</p>
     <div class="tl">
@@ -544,6 +559,34 @@
     const n=dx<0 ? Math.min(i+1,arr.length-1) : Math.max(i-1,0);
     if(n!==i) activate(arr[n].id);
   },{passive:true});
+
+  // ── 天氣（Open-Meteo 免金鑰；預報最遠 16 天，行程未進入範圍前顯示佔位） ──
+  const WX_DATES=['2026-08-30','2026-08-31','2026-09-01','2026-09-02','2026-09-03','2026-09-04','2026-09-05'];
+  const wxIcon=c=>c===0?'☀️':c<=2?'🌤️':c===3?'☁️':c<=48?'🌫️':c<=57?'🌦️':c<=67?'🌧️':c<=77?'❄️':c<=82?'🌧️':c<=86?'❄️':'⛈️';
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=35.1796&longitude=129.0756&current=temperature_2m,relative_humidity_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,relative_humidity_2m_mean&timezone=Asia%2FSeoul&forecast_days=16')
+    .then(r=>r.json())
+    .then(j=>{
+      if(j.current){
+        document.getElementById('wxnow').textContent=' ｜今日釜山 '+wxIcon(j.current.weather_code)+' '+Math.round(j.current.temperature_2m)+'°C · 濕度 '+j.current.relative_humidity_2m+'%';
+      }
+      const idx={};(j.daily&&j.daily.time||[]).forEach((d,i)=>idx[d]=i);
+      const g=document.getElementById('wxgrid');g.innerHTML='';
+      const wd=['日','一','二','三','四','五','六'];
+      WX_DATES.forEach(d=>{
+        const i=idx[d],el=document.createElement('div');el.className='wxd';
+        const dt=d.slice(5).replace('-','/'),w=wd[new Date(d+'T00:00:00').getDay()];
+        if(i===undefined){
+          el.innerHTML='<div class="dt">'+dt+'（'+w+'）</div><div class="ic">📅</div><div class="hm">未進入<br>16天預報</div>';
+        }else{
+          const D=j.daily;
+          el.innerHTML='<div class="dt">'+dt+'（'+w+'）</div><div class="ic">'+wxIcon(D.weather_code[i])+'</div><div class="tp">'+Math.round(D.temperature_2m_min[i])+'–'+Math.round(D.temperature_2m_max[i])+'°</div><div class="hm">💧'+Math.round(D.relative_humidity_2m_mean[i])+'% ☔'+(D.precipitation_probability_max[i]??'–')+'%</div>';
+          const chip=document.querySelector('.wxchip[data-wxdate="'+d+'"]');
+          if(chip) chip.textContent=wxIcon(D.weather_code[i])+' '+Math.round(D.temperature_2m_max[i])+'° ☔'+(D.precipitation_probability_max[i]??'–')+'%';
+        }
+        g.appendChild(el);
+      });
+    })
+    .catch(()=>{document.getElementById('wxgrid').innerHTML='<div class="wxd">天氣載入失敗，重新整理再試</div>';});
 </script>
 
 </body>
