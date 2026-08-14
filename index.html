@@ -210,9 +210,9 @@
 <header>
   <div class="wrap">
     <div class="eyebrow">TPE ⇄ PUS</div>
-    <h1>釜山 6 晚<span class="sub">2026.08.30（日）— 09.05（六）｜西線 → 東線 雙基地</span></h1>
+    <h1>釜山 6 晚<span class="sub">2026.08.30（日）— 09.05（六）｜西面單基地・4 人</span></h1>
     <div class="fbar">
-      <span>匯率概算 ₩1,000 ≈ NT$23</span>
+      <span class="fxlive">匯率概算 ₩1,000 ≈ NT$23</span>
     </div>
   </div>
 </header>
@@ -533,7 +533,7 @@
 </main>
 
 <footer>
-  <div class="wrap">匯率概算 ₩1,000≈NT$23 · 價格以現場/官網為準 · 2026-07 編製</div>
+  <div class="wrap">頁面內 NT$ 換算以 ₩1,000≈NT$23 計（誤差約 1–2%）· 價格以現場/官網為準 · 2026-08 更新</div>
 </footer>
 
 <script>
@@ -574,33 +574,90 @@
     if(n!==i) activate(arr[n].id);
   },{passive:true});
 
-  // ── 天氣（Open-Meteo 免金鑰；預報最遠 16 天，行程未進入範圍前顯示佔位） ──
+  // ── 天氣（Open-Meteo 免金鑰）──
+  // 16 天內走實際預報；尚未進入預報範圍的日子，改以 2023–2025 同日期的實測值平均當參考。
   const WX_DATES=['2026-08-30','2026-08-31','2026-09-01','2026-09-02','2026-09-03','2026-09-04','2026-09-05'];
+  const WD=['日','一','二','三','四','五','六'];
+  const LAT=35.1796, LON=129.0756;
   const wxIcon=c=>c===0?'☀️':c<=2?'🌤️':c===3?'☁️':c<=48?'🌫️':c<=57?'🌦️':c<=67?'🌧️':c<=77?'❄️':c<=82?'🌧️':c<=86?'❄️':'⛈️';
-  fetch('https://api.open-meteo.com/v1/forecast?latitude=35.1796&longitude=129.0756&current=temperature_2m,relative_humidity_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,relative_humidity_2m_mean&timezone=Asia%2FSeoul&forecast_days=16')
+  const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+
+  async function loadWeather(){
+    const g=document.getElementById('wxgrid');
+    const fc=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+'&current=temperature_2m,relative_humidity_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,relative_humidity_2m_mean&timezone=Asia%2FSeoul&forecast_days=16').then(r=>r.json());
+    if(fc.current){
+      document.getElementById('wxnow').textContent=' ｜今日釜山 '+wxIcon(fc.current.weather_code)+' '+Math.round(fc.current.temperature_2m)+'°C · 濕度 '+fc.current.relative_humidity_2m+'%';
+    }
+    const idx={};(fc.daily&&fc.daily.time||[]).forEach((d,i)=>idx[d]=i);
+    const missing=WX_DATES.filter(d=>idx[d]===undefined);
+
+    // 缺的日子抓往年同期（3 年）
+    let hist={};
+    if(missing.length){
+      const years=[2023,2024,2025];
+      const runs=await Promise.all(years.map(y=>
+        fetch('https://archive-api.open-meteo.com/v1/archive?latitude='+LAT+'&longitude='+LON+'&start_date='+y+'-08-30&end_date='+y+'-09-05&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,relative_humidity_2m_mean&timezone=Asia%2FSeoul').then(r=>r.json()).catch(()=>null)
+      ));
+      runs.forEach(j=>{
+        if(!j||!j.daily) return;
+        j.daily.time.forEach((t,i)=>{
+          const md=t.slice(5);
+          (hist[md]=hist[md]||{mn:[],mx:[],hm:[],rn:[]});
+          const D=j.daily;
+          if(D.temperature_2m_min[i]!=null) hist[md].mn.push(D.temperature_2m_min[i]);
+          if(D.temperature_2m_max[i]!=null) hist[md].mx.push(D.temperature_2m_max[i]);
+          if(D.relative_humidity_2m_mean[i]!=null) hist[md].hm.push(D.relative_humidity_2m_mean[i]);
+          if(D.precipitation_sum[i]!=null) hist[md].rn.push(D.precipitation_sum[i]);
+        });
+      });
+    }
+
+    g.innerHTML='';
+    let usedHist=false;
+    WX_DATES.forEach(d=>{
+      const el=document.createElement('div'); el.className='wxd';
+      const dt=d.slice(5).replace('-','/'), w=WD[new Date(d+'T00:00:00').getDay()];
+      const head='<div class="dt">'+dt+'（'+w+'）</div>';
+      const i=idx[d];
+      const chip=document.querySelector('.wxchip[data-wxdate="'+d+'"]');
+      if(i!==undefined){
+        const D=fc.daily, rain=D.precipitation_probability_max[i];
+        el.innerHTML=head+'<div class="ic">'+wxIcon(D.weather_code[i])+'</div><div class="tp">'+Math.round(D.temperature_2m_min[i])+'–'+Math.round(D.temperature_2m_max[i])+'°</div><div class="hm">💧'+Math.round(D.relative_humidity_2m_mean[i])+'% ☔'+(rain??'–')+'%</div>';
+        if(chip) chip.textContent=wxIcon(D.weather_code[i])+' '+Math.round(D.temperature_2m_max[i])+'° ☔'+(rain??'–')+'%';
+      }else{
+        const h=hist[d.slice(5)];
+        if(h&&h.mx.length){
+          usedHist=true;
+          const wet=h.rn.filter(v=>v>=1).length, n=h.rn.length;
+          const ic=wet===0?'☀️':wet>=n?'🌧️':'🌦️';
+          el.innerHTML=head+'<div class="ic">'+ic+'</div><div class="tp">'+Math.round(avg(h.mn))+'–'+Math.round(avg(h.mx))+'°</div><div class="hm">💧'+Math.round(avg(h.hm))+'% ☔'+wet+'/'+n+' 年有雨</div><div class="dt">往年同期</div>';
+          if(chip) chip.textContent='往年 '+Math.round(avg(h.mx))+'° ☔'+wet+'/'+n;
+        }else{
+          el.innerHTML=head+'<div class="ic">📅</div><div class="hm">尚無資料</div>';
+        }
+      }
+      g.appendChild(el);
+    });
+    if(usedHist){
+      const n=document.createElement('div');
+      n.className='small'; n.style.marginTop='8px';
+      n.textContent='※ 標「往年同期」者尚未進入 16 天預報範圍，顯示的是 2023–2025 年同日期實測平均（僅供參考）；每天重新整理會逐日換成真實預報。';
+      g.parentNode.appendChild(n);
+    }
+  }
+  loadWeather().catch(()=>{document.getElementById('wxgrid').innerHTML='<div class="wxd">天氣載入失敗，重新整理再試</div>';});
+
+  // ── 即時匯率（免金鑰）──
+  fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/krw.json')
     .then(r=>r.json())
     .then(j=>{
-      if(j.current){
-        document.getElementById('wxnow').textContent=' ｜今日釜山 '+wxIcon(j.current.weather_code)+' '+Math.round(j.current.temperature_2m)+'°C · 濕度 '+j.current.relative_humidity_2m+'%';
-      }
-      const idx={};(j.daily&&j.daily.time||[]).forEach((d,i)=>idx[d]=i);
-      const g=document.getElementById('wxgrid');g.innerHTML='';
-      const wd=['日','一','二','三','四','五','六'];
-      WX_DATES.forEach(d=>{
-        const i=idx[d],el=document.createElement('div');el.className='wxd';
-        const dt=d.slice(5).replace('-','/'),w=wd[new Date(d+'T00:00:00').getDay()];
-        if(i===undefined){
-          el.innerHTML='<div class="dt">'+dt+'（'+w+'）</div><div class="ic">📅</div><div class="hm">未進入<br>16天預報</div>';
-        }else{
-          const D=j.daily;
-          el.innerHTML='<div class="dt">'+dt+'（'+w+'）</div><div class="ic">'+wxIcon(D.weather_code[i])+'</div><div class="tp">'+Math.round(D.temperature_2m_min[i])+'–'+Math.round(D.temperature_2m_max[i])+'°</div><div class="hm">💧'+Math.round(D.relative_humidity_2m_mean[i])+'% ☔'+(D.precipitation_probability_max[i]??'–')+'%</div>';
-          const chip=document.querySelector('.wxchip[data-wxdate="'+d+'"]');
-          if(chip) chip.textContent=wxIcon(D.weather_code[i])+' '+Math.round(D.temperature_2m_max[i])+'° ☔'+(D.precipitation_probability_max[i]??'–')+'%';
-        }
-        g.appendChild(el);
+      const t=j.krw&&j.krw.twd; if(!t) return;
+      const per1000=(t*1000);
+      document.querySelectorAll('.fxlive').forEach(el=>{
+        el.textContent='₩1,000 ≈ NT$'+per1000.toFixed(1)+'（'+j.date.slice(5).replace('-','/')+' 即時）';
       });
     })
-    .catch(()=>{document.getElementById('wxgrid').innerHTML='<div class="wxd">天氣載入失敗，重新整理再試</div>';});
+    .catch(()=>{});
 </script>
 
 </body>
