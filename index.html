@@ -253,7 +253,7 @@
         <a class="lnk" href="https://www.weather.go.kr/w/weather/forecast/mid-term.do" target="_blank">🇰🇷 韓國氣象廳</a>
         <a class="lnk" href="https://www.windy.com/35.180/129.076?ecmwf,35.180,129.076,9" target="_blank">🌀 Windy 多模型比對</a>
         <a class="lnk" href="https://www.weather.go.kr/w/typhoon/typ-info.do" target="_blank">🌪 颱風動態</a><br>
-        <b>☔% 和 🌧mm 要分開看：</b>百分比是「當日最高的逐時降雨機率」——某一小時有 40% 就整天標 40%，不代表會下一整天；<b>真正決定要不要帶傘的是 mm 雨量</b>。<br><b>什麼時候的預報才算數：</b>D-14 以上基本是雜訊（此距離只有 GFS 還在出數字，各家看到的多半是同一份原始資料的不同包裝，隔天就會變）；<b>D-7 起才有參考價值、D-3 起才較穩</b>。9 月初是釜山的颱風季尾，真正要盯的是颱風動態而非單日降雨百分比。
+        <b>卡片怎麼讀：</b>「濕 %」是相對濕度（跟下不下雨無關，釜山夏天本來就 75–90%）；「雨 % · mm」前者是<b>當日最高的逐時降雨機率</b>（某一小時 40% 就整天標 40%，不代表下一整天），後者是<b>預估總雨量</b>——決定要不要帶傘的是後面那個 mm。<br><b>什麼時候的預報才算數：</b>D-14 以上基本是雜訊（此距離只有 GFS 還在出數字，各家看到的多半是同一份原始資料的不同包裝，隔天就會變）；<b>D-7 起才有參考價值、D-3 起才較穩</b>。9 月初是釜山的颱風季尾，真正要盯的是颱風動態而非單日降雨百分比。
       </div>
     </div>
     <h2>七天結構</h2>
@@ -633,16 +633,18 @@
       if(i!==undefined){
         const D=fc.daily, rain=D.precipitation_probability_max[i];
         const mm=D.precipitation_sum?D.precipitation_sum[i]:null;
-        const mmTxt=(mm==null)?'':(mm>=0.5?'<div class="hm" style="color:var(--donghae);font-weight:600;">🌧 '+(mm>=10?Math.round(mm):mm.toFixed(1))+' mm</div>':'<div class="hm">乾</div>');
-        el.innerHTML=head+'<div class="ic">'+wxIcon(D.weather_code[i])+'</div><div class="tp">'+Math.round(D.temperature_2m_min[i])+'–'+Math.round(D.temperature_2m_max[i])+'°</div><div class="hm">💧'+Math.round(D.relative_humidity_2m_mean[i])+'% ☔'+(rain??'–')+'%</div>'+mmTxt;
-        if(chip) chip.textContent=wxIcon(D.weather_code[i])+' '+Math.round(D.temperature_2m_max[i])+'°'+(mm>=0.5?' 🌧'+(mm>=10?Math.round(mm):mm.toFixed(1))+'mm':' ☔'+(rain??'–')+'%');
+        const wet=(mm!=null&&mm>=0.5);
+        const mmS=(mm==null)?'–':(mm>=10?Math.round(mm):(mm>=0.05?mm.toFixed(1):'0'));
+        const rainLine='<div class="hm"'+(wet?' style="color:var(--donghae);font-weight:600;"':'')+'>雨 '+(rain??'–')+'% · '+mmS+'mm</div>';
+        el.innerHTML=head+'<div class="ic">'+wxIcon(D.weather_code[i])+'</div><div class="tp">'+Math.round(D.temperature_2m_min[i])+'–'+Math.round(D.temperature_2m_max[i])+'°</div><div class="hm">濕 '+Math.round(D.relative_humidity_2m_mean[i])+'%</div>'+rainLine;
+        if(chip) chip.textContent=wxIcon(D.weather_code[i])+' '+Math.round(D.temperature_2m_max[i])+'° 雨'+mmS+'mm';
       }else{
         const h=hist[d.slice(5)];
         if(h&&h.mx.length){
           usedHist=true;
           const wet=h.rn.filter(v=>v>=1).length, n=h.rn.length;
           const ic=wet===0?'☀️':wet>=n?'🌧️':'🌦️';
-          el.innerHTML=head+'<div class="ic">'+ic+'</div><div class="tp">'+Math.round(avg(h.mn))+'–'+Math.round(avg(h.mx))+'°</div><div class="hm">💧'+Math.round(avg(h.hm))+'% ☔'+wet+'/'+n+' 年有雨</div><div class="dt">往年同期</div>';
+          el.innerHTML=head+'<div class="ic">'+ic+'</div><div class="tp">'+Math.round(avg(h.mn))+'–'+Math.round(avg(h.mx))+'°</div><div class="hm">濕 '+Math.round(avg(h.hm))+'%</div><div class="hm">'+wet+'/'+n+' 年有雨</div><div class="dt">往年同期</div>';
           if(chip) chip.textContent='往年 '+Math.round(avg(h.mx))+'° ☔'+wet+'/'+n;
         }else{
           el.innerHTML=head+'<div class="ic">📅</div><div class="hm">尚無資料</div>';
