@@ -667,7 +667,10 @@
       const dla=r(b[0]-a[0]),dlo=r(b[1]-a[1]);
       const h=Math.sin(dla/2)**2+Math.cos(r(a[0]))*Math.cos(r(b[0]))*Math.sin(dlo/2)**2;
       return Math.round(2*R*Math.asin(Math.sqrt(h)));};
-    const CAT={TD:'熱帶性低氣壓',TS:'輕度颱風',STS:'輕度颱風（強）',TY:'中度以上颱風',STY:'強烈颱風',L:'溫帶低氣壓',LOW:'溫帶低氣壓'};
+    // 依「10 分鐘平均最大風速」判定（台灣中央氣象署分級），比各國代碼直觀
+    const twCat=w=>{w=parseFloat(w); return isNaN(w)?'':(w<17.2?'熱帶性低氣壓':w<32.7?'輕度颱風':w<51?'中度颱風':'強烈颱風');};
+    const JPG={'強い':'強','非常に強い':'非常強','猛烈な':'猛烈'};
+    const mps=x=>(x&&x.maximumWind&&x.maximumWind.sustained&&x.maximumWind.sustained['m/s'])||null;
     const LOC={'トラック諸島近海':'楚克群島近海','マリアナ諸島':'馬里亞納群島','マリアナ諸島近海':'馬里亞納群島近海','カロリン諸島':'加羅林群島','フィリピンの東':'菲律賓以東','フィリピンの西':'菲律賓以西','南シナ海':'南海','東シナ海':'東海','台湾の東':'台灣以東','台湾付近':'台灣附近','沖縄の南':'沖繩以南','沖縄の東':'沖繩以東','沖縄の西':'沖繩以西','沖縄付近':'沖繩附近','日本の南':'日本以南','日本の東':'日本以東','黄海':'黃海','日本海':'日本海','四国沖':'四國外海','奄美大島近海':'奄美大島近海','父島近海':'父島近海','硫黄島近海':'硫磺島近海','ルソン島':'呂宋島','ルソン島の東':'呂宋島以東','ベトナム':'越南','朝鮮半島':'朝鮮半島'};
     const pos=d=>d[0].toFixed(1)+'°N '+d[1].toFixed(1)+'°E';
     const place=(loc,d)=>{const z=LOC[loc]; return pos(d)+(z?'（'+z+'）':(loc&&!/[ァ-ヶ]/.test(loc)?'（'+loc+'）':''));};
@@ -693,20 +696,26 @@
                  :             ['#C6362B','🔴 直接影響範圍'];
         const nm=(title.name&&(title.name.en||title.name.jp))||t.tropicalCyclone;
         const num=title.typhoonNumber||t.typhoonNumber||'';
-        const cat=CAT[(now.category&&now.category.en)||t.category]||'';
-        const wind=(now.maximumWind&&now.maximumWind.sustained&&now.maximumWind.sustained['m/s'])||'--';
+        const wind=mps(now)||'--';
+        const cat=twCat(wind)||'';
+        let peak={w:0,p:null};
+        pts.forEach(x=>{const w=parseFloat(mps(x)||0); if(w>peak.w) peak={w:w,p:x};});
+        const peakLine=(peak.p&&peak.p!==now&&peak.w>parseFloat(wind||0))
+          ? '<br><span class="meta">預報巔峰：'+ft(peak.p.validtime&&peak.p.validtime.JST)+' 增強至 '+peak.w+' m/s（'+twCat(peak.w)+(JPG[peak.p.intensity]?'・日本氣象廳評為「'+JPG[peak.p.intensity]+'」':'')+'）</span>'
+          : '';
         const closer=best.d<dn-50, atEnd=best.p===last;
         return '<div class="tycard" style="--lv:'+lv[0]+'">'+
-          '<span class="nm">'+nm+(num?'（'+num+' 號）':'')+' '+cat+'</span> ｜ '+lv[1]+
-          '<br><span class="meta">現在：'+place(now.location,now.position.deg)+' · '+(now.pressure||'--')+' hPa · 最大風 '+wind+' m/s</span>'+
+          '<span class="nm">'+nm+(num?'（'+num+' 號）':'')+' '+cat+' · '+wind+' m/s</span> ｜ '+lv[1]+
+          '<br><span class="meta">現在：'+place(now.location,now.position.deg)+' · 中心氣壓 '+(now.pressure||'--')+' hPa</span>'+peakLine+
           '<br><span class="meta">距釜山 '+dn.toLocaleString()+' km'+
           (closer?'｜'+(atEnd?'預報末端仍在接近中，'+ft(best.p.validtime&&best.p.validtime.JST)+' 時 ':'預報最近 ')+best.d.toLocaleString()+' km':'｜預報路徑未再接近')+
           '｜預報止於 '+ft(last.validtime&&last.validtime.JST)+'</span></div>';
       }));
+      const legend='<br><span style="color:var(--mute);">分級依 10 分鐘平均最大風速（台灣中央氣象署）：輕度 17.2–32.6、中度 32.7–50.9、強烈 ≥51 m/s。</span>';
       const tail = daysToTrip>6
         ? 'JMA 颱風預報最長約 5 天——<b>目前這些系統的預報還碰不到行程日期</b>（距出發 '+daysToTrip+' 天）。真正要盯的是 8/27 之後生成的颱風。'
         : '<b>已進入可預報範圍</b>：預報路徑若涵蓋行程日期就要認真看，颱風警報下遊艇夜航與海岸列車會停駛。';
-      box.innerHTML=HEAD+cards.join('')+'<div class="small" style="margin-top:6px;line-height:1.6;">'+tail+'</div>';
+      box.innerHTML=HEAD+cards.join('')+'<div class="small" style="margin-top:6px;line-height:1.6;">'+tail+legend+'</div>';
     }catch(e){
       box.innerHTML=HEAD+'<div class="tyok">颱風資料載入失敗——請直接點下方「颱風動態」連結看韓國氣象廳。</div>';}
   })();
