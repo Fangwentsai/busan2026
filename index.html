@@ -203,6 +203,13 @@
   .tycard{background:var(--paper);border:1px solid var(--rule);border-left:4px solid var(--lv,#1E7A46);border-radius:8px;padding:9px 12px;font-size:13px;line-height:1.7;margin-bottom:7px;}
   .tycard:last-child{margin-bottom:0;}
   .tycard .nm{font-weight:700;}
+  .lggrid{display:grid;grid-template-columns:1fr;gap:8px;}
+  @media(min-width:660px){.lggrid{grid-template-columns:repeat(3,1fr);}}
+  .lgcard{background:var(--paper);border:1px solid var(--rule);border-top:4px solid var(--lv,#8A97A0);border-radius:8px;padding:10px 12px;}
+  .lgt{font-weight:700;font-size:13.5px;margin-bottom:5px;}
+  .lgw{font-family:var(--mono);font-size:11.5px;color:var(--ink);margin-bottom:5px;line-height:1.5;}
+  .lgr{font-size:12.5px;font-weight:600;line-height:1.5;}
+  .lgn{font-size:11.5px;color:var(--mute);margin-top:4px;line-height:1.5;}
   .tycard .meta{font-family:var(--mono);font-size:11.5px;color:var(--mute);}
   .tyok{font-size:13px;color:var(--mute);line-height:1.7;}
   .wxchip{float:right;font-family:var(--mono);font-size:12px;background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:3px 8px;color:var(--mute);}
@@ -659,65 +666,112 @@
       g.parentNode.appendChild(n);
     }
   }
-  // ── 颱風動態（日本氣象廳公開 JSON，CORS 開放、免金鑰） ──
+  // ── 颱風／航班風險：出發台灣、旅途釜山、返程台灣 ──
   (async function(){
     const box=document.getElementById('tybox'); if(!box) return;
-    const B=[35.1796,129.0756], TRIP='2026-08-30';
+    const TPE=[25.0777,121.2328], PUS=[35.1796,129.0756];
+    const OUT='2026-08-30', RET='2026-09-05';
     const dist=(a,b)=>{const R=6371,r=x=>x*Math.PI/180;
       const dla=r(b[0]-a[0]),dlo=r(b[1]-a[1]);
       const h=Math.sin(dla/2)**2+Math.cos(r(a[0]))*Math.cos(r(b[0]))*Math.sin(dlo/2)**2;
       return Math.round(2*R*Math.asin(Math.sqrt(h)));};
-    // 依「10 分鐘平均最大風速」判定（台灣中央氣象署分級），比各國代碼直觀
     const twCat=w=>{w=parseFloat(w); return isNaN(w)?'':(w<17.2?'熱帶性低氣壓':w<32.7?'輕度颱風':w<51?'中度颱風':'強烈颱風');};
     const JPG={'強い':'強','非常に強い':'非常強','猛烈な':'猛烈'};
     const mps=x=>(x&&x.maximumWind&&x.maximumWind.sustained&&x.maximumWind.sustained['m/s'])||null;
     const LOC={'トラック諸島近海':'楚克群島近海','マリアナ諸島':'馬里亞納群島','マリアナ諸島近海':'馬里亞納群島近海','カロリン諸島':'加羅林群島','フィリピンの東':'菲律賓以東','フィリピンの西':'菲律賓以西','南シナ海':'南海','東シナ海':'東海','台湾の東':'台灣以東','台湾付近':'台灣附近','沖縄の南':'沖繩以南','沖縄の東':'沖繩以東','沖縄の西':'沖繩以西','沖縄付近':'沖繩附近','日本の南':'日本以南','日本の東':'日本以東','黄海':'黃海','日本海':'日本海','四国沖':'四國外海','奄美大島近海':'奄美大島近海','父島近海':'父島近海','硫黄島近海':'硫磺島近海','ルソン島':'呂宋島','ルソン島の東':'呂宋島以東','ベトナム':'越南','朝鮮半島':'朝鮮半島'};
-    const pos=d=>d[0].toFixed(1)+'°N '+d[1].toFixed(1)+'°E';
-    const place=(loc,d)=>{const z=LOC[loc]; return pos(d)+(z?'（'+z+'）':(loc&&!/[ァ-ヶ]/.test(loc)?'（'+loc+'）':''));};
+    const place=(loc,d)=>{const z=LOC[loc]; return d[0].toFixed(1)+'°N '+d[1].toFixed(1)+'°E'+(z?'（'+z+'）':(loc&&!/[ァ-ヶ]/.test(loc)?'（'+loc+'）':''));};
     const ft=v=>v?String(v).slice(5,16).replace('T',' '):'--';
-    const HEAD='<div class="tyhead">🌪 颱風動態 · 日本氣象廳（即時）</div>';
-    const daysToTrip=Math.round((new Date(TRIP+'T00:00:00')-new Date())/86400000);
+    const lvOf=d=>d>1500?['#1E7A46','🟢 無威脅']:d>800?['#A9611C','🟡 留意']:d>400?['#C6362B','🟠 可能影響']:['#C6362B','🔴 高風險'];
+
+    // 桃園 8/30 與 9/5 天氣
+    let tpe={};
+    try{
+      const r=await (await fetch('https://api.open-meteo.com/v1/forecast?latitude=25.0777&longitude=121.2328&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max&timezone=Asia%2FTaipei&forecast_days=16')).json();
+      (r.daily.time||[]).forEach((t,i)=>{tpe[t]={wc:r.daily.weather_code[i],mx:r.daily.temperature_2m_max[i],mn:r.daily.temperature_2m_min[i],mm:r.daily.precipitation_sum[i],pp:r.daily.precipitation_probability_max[i],ws:r.daily.wind_speed_10m_max[i]};});
+    }catch(e){}
+    const wxLine=d=>{const w=tpe[d]; if(!w) return '<span style="color:var(--mute)">尚未進入 16 天預報</span>';
+      const mm=w.mm==null?'–':(w.mm>=10?Math.round(w.mm):w.mm.toFixed(1));
+      return (typeof wxIcon==='function'?wxIcon(w.wc)+' ':'')+Math.round(w.mn)+'–'+Math.round(w.mx)+'°　雨 '+(w.pp??'–')+'% · '+mm+'mm　風 '+Math.round(w.ws)+'km/h';};
+
+    // 颱風
+    let tcs=[];
     try{
       const list=await (await fetch('https://www.jma.go.jp/bosai/typhoon/data/targetTc.json')).json();
-      if(!list.length){
-        box.innerHTML=HEAD+'<div class="tyok">目前西北太平洋<b>無活躍颱風</b> 🟢<br>9 月初仍是釜山颱風季尾，出發前一週再回來看一次。</div>';return;}
-      const cards=await Promise.all(list.map(async t=>{
+      tcs=await Promise.all(list.map(async t=>{
         const sp=await (await fetch('https://www.jma.go.jp/bosai/typhoon/data/'+t.tropicalCyclone+'/specifications.json')).json();
         const title=sp.find(x=>x.part==='title')||{};
         const pts=sp.filter(x=>x.position&&x.position.deg);
-        if(!pts.length) return '';
-        const now=pts[0], last=pts[pts.length-1];
-        const dn=dist(B,now.position.deg);
-        let best={d:dn,p:now};
-        pts.forEach(x=>{const d=dist(B,x.position.deg); if(d<best.d) best={d:d,p:x};});
-        const lv = best.d>1500?['#1E7A46','🟢 遠離行程範圍']
-                 : best.d>800 ?['#A9611C','🟡 距離尚遠，持續留意']
-                 : best.d>400 ?['#C6362B','🟠 可能影響釜山天氣']
-                 :             ['#C6362B','🔴 直接影響範圍'];
-        const nm=(title.name&&(title.name.en||title.name.jp))||t.tropicalCyclone;
-        const num=title.typhoonNumber||t.typhoonNumber||'';
-        const wind=mps(now)||'--';
-        const cat=twCat(wind)||'';
-        let peak={w:0,p:null};
-        pts.forEach(x=>{const w=parseFloat(mps(x)||0); if(w>peak.w) peak={w:w,p:x};});
-        const peakLine=(peak.p&&peak.p!==now&&peak.w>parseFloat(wind||0))
-          ? '<br><span class="meta">預報巔峰：'+ft(peak.p.validtime&&peak.p.validtime.JST)+' 增強至 '+peak.w+' m/s（'+twCat(peak.w)+(JPG[peak.p.intensity]?'・日本氣象廳評為「'+JPG[peak.p.intensity]+'」':'')+'）</span>'
-          : '';
-        const closer=best.d<dn-50, atEnd=best.p===last;
-        return '<div class="tycard" style="--lv:'+lv[0]+'">'+
-          '<span class="nm">'+nm+(num?'（'+num+' 號）':'')+' '+cat+' · '+wind+' m/s</span> ｜ '+lv[1]+
-          '<br><span class="meta">現在：'+place(now.location,now.position.deg)+' · 中心氣壓 '+(now.pressure||'--')+' hPa</span>'+peakLine+
-          '<br><span class="meta">距釜山 '+dn.toLocaleString()+' km'+
-          (closer?'｜'+(atEnd?'預報末端仍在接近中，'+ft(best.p.validtime&&best.p.validtime.JST)+' 時 ':'預報最近 ')+best.d.toLocaleString()+' km':'｜預報路徑未再接近')+
-          '｜預報止於 '+ft(last.validtime&&last.validtime.JST)+'</span></div>';
+        return pts.length?{title:title,pts:pts,raw:t}:null;
       }));
-      const legend='<br><span style="color:var(--mute);">分級依 10 分鐘平均最大風速（台灣中央氣象署）：輕度 17.2–32.6、中度 32.7–50.9、強烈 ≥51 m/s。</span>';
-      const tail = daysToTrip>6
-        ? 'JMA 颱風預報最長約 5 天——<b>目前這些系統的預報還碰不到行程日期</b>（距出發 '+daysToTrip+' 天）。真正要盯的是 8/27 之後生成的颱風。'
-        : '<b>已進入可預報範圍</b>：預報路徑若涵蓋行程日期就要認真看，颱風警報下遊艇夜航與海岸列車會停駛。';
-      box.innerHTML=HEAD+cards.join('')+'<div class="small" style="margin-top:6px;line-height:1.6;">'+tail+legend+'</div>';
-    }catch(e){
-      box.innerHTML=HEAD+'<div class="tyok">颱風資料載入失敗——請直接點下方「颱風動態」連結看韓國氣象廳。</div>';}
+      tcs=tcs.filter(Boolean);
+    }catch(e){ box.innerHTML='<div class="tyhead">🌪 颱風／航班風險</div><div class="tyok">颱風資料載入失敗——請直接點下方「颱風動態」連結。</div>'; return; }
+
+    // 某地某日的颱風風險（只採用預報時間落在該日的點）
+    const riskFor=(ll,date)=>{
+      let best=null, covered=false, overall=null;
+      tcs.forEach(tc=>tc.pts.forEach(x=>{
+        const d=dist(ll,x.position.deg);
+        const day=String((x.validtime&&x.validtime.JST)||'').slice(0,10);
+        if(overall===null||d<overall.d) overall={d:d,day:day,nm:(tc.title.name&&(tc.title.name.en||tc.title.name.jp))||'熱帶擾動'};
+        if(day===date){covered=true; if(best===null||d<best.d) best={d:d,nm:(tc.title.name&&(tc.title.name.en||tc.title.name.jp))||'熱帶擾動'};}
+      }));
+      if(!tcs.length) return ['#1E7A46','🟢 目前無活躍颱風'];
+      if(covered&&best) {const L=lvOf(best.d); return [L[0],L[1]+'（'+best.nm+' 距 '+best.d.toLocaleString()+'km）'];}
+      if(overall&&overall.d<=600){const L=lvOf(overall.d);
+        return [L[0],'⚠ 預報未及該日，但 '+overall.nm+' 於 '+overall.day.slice(5).replace('-','/')+' 將接近至 '+overall.d.toLocaleString()+'km'];}
+      return ['#8A97A0','⚪ 預報未及該日'+(overall?'（現有系統最近 '+overall.d.toLocaleString()+'km）':'')];
+    };
+    // 釜山：整段行程任一天
+    const riskRange=(ll,a,b)=>{
+      let best=null, covered=false;
+      tcs.forEach(tc=>tc.pts.forEach(x=>{
+        const day=String((x.validtime&&x.validtime.JST)||'').slice(0,10);
+        if(day>=a&&day<=b){covered=true; const d=dist(ll,x.position.deg); if(best===null||d<best.d) best={d:d,nm:(tc.title.name&&(tc.title.name.en||tc.title.name.jp))||'熱帶擾動',day:day};}
+      }));
+      if(!tcs.length) return ['#1E7A46','🟢 目前無活躍颱風'];
+      if(covered&&best){const L=lvOf(best.d); return [L[0],L[1]+'（'+best.nm+' '+best.day.slice(5)+' 距 '+best.d.toLocaleString()+'km）'];}
+      return ['#8A97A0','⚪ 預報未及行程期間'];
+    };
+
+    const legs=[
+      {ic:'🛫',t:'8/30（日）出發・桃園',wx:wxLine(OUT),rk:riskFor(TPE,OUT),note:'颱風假／機場關場會直接取消航班'},
+      {ic:'🏝',t:'8/30–9/5 釜山',wx:'逐日詳見上方七日卡',rk:riskRange(PUS,OUT,RET),note:'警報下遊艇夜航、海岸列車會停駛'},
+      {ic:'🛬',t:'9/5（六）返程・桃園',wx:wxLine(RET),rk:riskFor(TPE,RET),note:'台灣端有颱風＝回不去，需留意改簽'}
+    ];
+    let html='<div class="tyhead">🌪 颱風／航班風險 · 三段檢查（即時）</div><div class="lggrid">';
+    legs.forEach(L=>{
+      html+='<div class="lgcard" style="--lv:'+L.rk[0]+'"><div class="lgt">'+L.ic+' '+L.t+'</div>'+
+        '<div class="lgw">'+L.wx+'</div>'+
+        '<div class="lgr">'+L.rk[1]+'</div>'+
+        '<div class="lgn">'+L.note+'</div></div>';
+    });
+    html+='</div>';
+
+    if(tcs.length){
+      html+='<div class="tyhead" style="margin:12px 0 7px;">現役颱風</div>';
+      tcs.forEach(tc=>{
+        const now=tc.pts[0], last=tc.pts[tc.pts.length-1];
+        const wind=mps(now)||'--';
+        let peak={w:0,p:null};
+        tc.pts.forEach(x=>{const w=parseFloat(mps(x)||0); if(w>peak.w) peak={w:w,p:x};});
+        const dT=Math.min.apply(null,tc.pts.map(x=>dist(TPE,x.position.deg)));
+        const dB=Math.min.apply(null,tc.pts.map(x=>dist(PUS,x.position.deg)));
+        const L=lvOf(Math.min(dT,dB));
+        html+='<div class="tycard" style="--lv:'+L[0]+'">'+
+          '<span class="nm">'+((tc.title.name&&(tc.title.name.en||tc.title.name.jp))||'未命名熱帶擾動')+(/^[0-9]{4}$/.test(tc.title.typhoonNumber||'')?'（'+tc.title.typhoonNumber+' 號）':' ')+twCat(wind)+' · '+wind+' m/s</span>'+
+          '<br><span class="meta">現在：'+place(now.location,now.position.deg)+' · '+(now.pressure||'--')+' hPa</span>'+
+          (peak.p&&peak.p!==now&&peak.w>parseFloat(wind||0)?'<br><span class="meta">預報巔峰：'+ft(peak.p.validtime&&peak.p.validtime.JST)+' 增強至 '+peak.w+' m/s（'+twCat(peak.w)+(JPG[peak.p.intensity]?'・JMA「'+JPG[peak.p.intensity]+'」':'')+'）</span>':'')+
+          '<br><span class="meta">預報路徑最近：台灣 '+dT.toLocaleString()+' km｜釜山 '+dB.toLocaleString()+' km（預報止於 '+ft(last.validtime&&last.validtime.JST)+'）</span></div>';
+      });
+    }else{
+      html+='<div class="tyok" style="margin-top:8px;">目前西北太平洋<b>無活躍颱風</b> 🟢</div>';
+    }
+    const dd=Math.round((new Date(OUT+'T00:00:00')-new Date())/86400000);
+    html+='<div class="small" style="margin-top:7px;line-height:1.6;">'+
+      (dd>6?'JMA 颱風預報最長約 5 天——現在標「⚪ 預報未及」是正常的，距出發還有 '+dd+' 天。<b>8/25 起這三格才會開始出現有意義的判斷。</b>'
+          :'<b>已進入可預報範圍</b>，三格的燈號現在都算數。')+
+      '<br><span style="color:var(--mute);">分級依 10 分鐘平均最大風速（台灣中央氣象署）：輕度 17.2–32.6、中度 32.7–50.9、強烈 ≥51 m/s。距離為颱風中心到該地。</span></div>';
+    box.innerHTML=html;
   })();
 
   loadWeather().catch(()=>{document.getElementById('wxgrid').innerHTML='<div class="wxd">天氣載入失敗，重新整理再試</div>';});
