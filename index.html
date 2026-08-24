@@ -209,6 +209,7 @@
   .lgt{font-weight:700;font-size:13.5px;margin-bottom:5px;}
   .lgw{font-family:var(--mono);font-size:11.5px;color:var(--ink);margin-bottom:5px;line-height:1.5;}
   .lgr{font-size:12.5px;font-weight:600;line-height:1.5;}
+  .xcheck{margin-top:9px;background:#F2F6F9;border:1px solid var(--rule);border-left:4px solid var(--donghae);border-radius:8px;padding:9px 12px;font-size:12.5px;line-height:1.7;}
   .lgn{font-size:11.5px;color:var(--mute);margin-top:4px;line-height:1.5;}
   .tycard .meta{font-family:var(--mono);font-size:11.5px;color:var(--mute);}
   .tyok{font-size:13px;color:var(--mute);line-height:1.7;}
@@ -746,6 +747,13 @@
         '<div class="lgn">'+L.note+'</div></div>';
     });
     html+='</div>';
+    // CWA 雙來源交叉驗證（本機以 tools/cwa_check.py 產生，人工更新）
+    html+='<div class="xcheck"><b>🔁 CWA × JMA 交叉驗證</b>（08/24 19:20 快照）：'+
+      '兩家對 <b>Saudel（沙德爾）</b>路徑高度一致——最接近台灣是 <b>8/28</b>（CWA 208km／JMA 239km），'+
+      '之後轉入中國內陸減弱，<b>8/30 出發日應已消散</b>。位置差僅 30–110km，遠小於 72 小時預報的典型誤差（200–300km），可信度高。'+
+      '<br>差異在強度：CWA 判 51 m/s（強烈颱風），JMA 判 45 m/s（中度颱風），CWA 系統性偏強約 5–6 m/s、15 hPa。'+
+      '<b>對釜山無威脅</b>：兩家都顯示行程期間不會靠近 850km 以內。'+
+      '<br><span style="color:var(--mute);">CWA 另提供 JMA 沒有的「70% 機率半徑」：8/28 為 360km——即實際位置可能落在該圓內任一處，北台灣仍在範圍邊緣，出發前一週要再確認。</span></div>';
 
     if(tcs.length){
       html+='<div class="tyhead" style="margin:12px 0 7px;">現役颱風</div>';
