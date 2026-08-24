@@ -209,6 +209,8 @@
   .lgt{font-weight:700;font-size:13.5px;margin-bottom:5px;}
   .lgw{font-family:var(--mono);font-size:11.5px;color:var(--ink);margin-bottom:5px;line-height:1.5;}
   .lgr{font-size:12.5px;font-weight:600;line-height:1.5;}
+  .warnbox{margin-top:8px;background:#FFF6F5;border:1px solid #F0C9C4;border-left:4px solid var(--crab);border-radius:7px;padding:8px 11px;line-height:1.7;}
+  .warnbox .meta{font-family:var(--mono);font-size:11.5px;display:block;margin:3px 0;}
   .xcheck{margin-top:9px;background:#F2F6F9;border:1px solid var(--rule);border-left:4px solid var(--donghae);border-radius:8px;padding:9px 12px;font-size:12.5px;line-height:1.7;}
   .lgn{font-size:11.5px;color:var(--mute);margin-top:4px;line-height:1.5;}
   .tycard .meta{font-family:var(--mono);font-size:11.5px;color:var(--mute);}
@@ -747,13 +749,21 @@
         '<div class="lgn">'+L.note+'</div></div>';
     });
     html+='</div>';
-    // CWA 雙來源交叉驗證（本機以 tools/cwa_check.py 產生，人工更新）
-    html+='<div class="xcheck"><b>🔁 CWA × JMA 交叉驗證</b>（08/24 19:20 快照）：'+
-      '兩家對 <b>Saudel（沙德爾）</b>路徑高度一致——最接近台灣是 <b>8/28</b>（CWA 208km／JMA 239km），'+
-      '之後轉入中國內陸減弱，<b>8/30 出發日應已消散</b>。位置差僅 30–110km，遠小於 72 小時預報的典型誤差（200–300km），可信度高。'+
-      '<br>差異在強度：CWA 判 51 m/s（強烈颱風），JMA 判 45 m/s（中度颱風），CWA 系統性偏強約 5–6 m/s、15 hPa。'+
-      '<b>對釜山無威脅</b>：兩家都顯示行程期間不會靠近 850km 以內。'+
-      '<br><span style="color:var(--mute);">CWA 另提供 JMA 沒有的「70% 機率半徑」：8/28 為 360km——即實際位置可能落在該圓內任一處，北台灣仍在範圍邊緣，出發前一週要再確認。</span></div>';
+    // CWA 雙來源交叉驗證＋減速敏感度（本機 tools/cwa_check.py 產生，人工更新）
+    html+='<div class="xcheck"><b>🔁 CWA × JMA 交叉驗證</b>（08/24 19:30 快照）：'+
+      '兩家對 <b>Saudel（沙德爾）</b>的<b>路徑</b>高度一致——最接近台灣 <b>8/28</b>（CWA 208km／JMA 239km），'+
+      '位置差僅 30–110km，遠小於 72 小時預報的典型誤差。<b>對釜山全程無威脅</b>（最近也在 850km 外）。'+
+      '<br>強度上 CWA 判 51 m/s（強烈颱風）、JMA 判 45 m/s（中度颱風），CWA 系統性偏強約 5–6 m/s。'+
+      '<div class="warnbox"><b>⚠ 但「路徑準」不等於「時間準」——這才是 8/30 的真正風險</b><br>'+
+      '把 CWA 路徑的移速打折後，最接近台灣的時間變成：'+
+      '<span class="meta">移速 85% → 8/29 07:00　｜　<b style="color:var(--crab)">移速 70% → 8/30 07:08（出發當天早上）</b>　｜　移速 60% → 8/31</span><br>'+
+      '近三年台灣周邊 16 個個案實測：移速偏差範圍極大（最慢 −58%、最快 +231%），'+
+      '<b>13 個有完整資料的個案中 5 個減速、其中 3 個減速逾 50%</b>（KRATHON 2024 在台灣附近滯留 3.5 天）。'+
+      '中心位於台灣 400km 內的時長中位數 30 小時，但長尾可達 84 小時。<br>'+
+      'CWA 自己的<b>70% 機率半徑在 8/28 已達 360km</b>——以 12–18 km/h 換算約等於 <b>20–30 小時的時間不確定性</b>，'+
+      '官方其實已經把這個風險標示出來了。<br>'+
+      '<b>結論：不能把 8/30 當成安全。</b>基準情境（照預報走）出發日無虞，但只要慢三成就直接撞上。'+
+      '<b>8/27–8/28 務必重跑 tools/cwa_check.py 再判斷</b>，並先查好台虎的颱風改簽規定。</div></div>';
 
     if(tcs.length){
       html+='<div class="tyhead" style="margin:12px 0 7px;">現役颱風</div>';

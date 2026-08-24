@@ -71,6 +71,7 @@ def jma_tracks():
 
 def main():
     cwa, jma = cwa_tracks(load_key()), jma_tracks()
+    _cwa_for_scen = cwa
     print("=" * 78)
     print("CWA vs JMA 颱風比對　產生時間", datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
     print("行程 %s ~ %s｜桃園機場、釜山" % TRIP)
@@ -100,6 +101,42 @@ def main():
                 if near:
                     m = min(near)
                     print("   ⚠ %s/%s 行程期間最近 %dkm（%s）" % (src, label, m[0], m[1]))
+    for nm in cwa:
+        if cwa[nm]["pts"] and min(dist(TPE,(p[1],p[2])) for p in cwa[nm]["pts"]) < 800:
+            slowdown_scenarios(cwa, nm)
+
+
+def slowdown_scenarios(cwa, name="SAUDEL", target=None):
+    """把 CWA 預報路徑的移速打折，看最接近目標點的時間會延後多少。
+
+    颱風實際移速常偏離預報（近三年台灣周邊個案：最慢 -58%、最快 +231%），
+    路徑對了不代表時間對了——這是判斷「出發日會不會被掃到」的關鍵。
+    """
+    import datetime as _dt
+    target = target or TPE
+    s = cwa.get(name.upper())
+    if not s or len(s["pts"]) < 3:
+        return
+    pts = s["pts"]
+    t0 = _dt.datetime.strptime(pts[0][0], "%Y-%m-%d %H:%M")
+    hrs, cum = [0.0], [0.0]
+    for i in range(1, len(pts)):
+        ti = _dt.datetime.strptime(pts[i][0], "%Y-%m-%d %H:%M")
+        hrs.append((ti - t0).total_seconds() / 3600)
+        cum.append(cum[-1] + dist((pts[i-1][1], pts[i-1][2]), (pts[i][1], pts[i][2])))
+    dists = [dist(target, (p[1], p[2])) for p in pts]
+    k = dists.index(min(dists))
+    print("\n" + "=" * 78)
+    print("減速敏感度：%s 最接近台灣（%d km）的時間" % (name, dists[k]))
+    print("=" * 78)
+    print("  %-20s %-24s %s" % ("情境", "抵達最近點", "較原預報延後"))
+    for f, lab in ((1.0, "CWA 原預報"), (0.85, "移速 85%"), (0.7, "移速 70%"),
+                   (0.6, "移速 60%"), (0.5, "移速 50%（停滯級）")):
+        t = sum((hrs[i] - hrs[i-1]) / f for i in range(1, k + 1))
+        arr = t0 + _dt.timedelta(hours=t)
+        print("  %-20s %-24s +%.1f 小時 (%.1f 天)"
+              % (lab, arr.strftime("%m/%d %H:%M"), t - hrs[k], (t - hrs[k]) / 24))
+    print("  ※ 出發 %s 16:40／返程 %s" % (TRIP[0][5:], TRIP[1][5:]))
 
 
 if __name__ == "__main__":
