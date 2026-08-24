@@ -1,0 +1,16 @@
+# 環境變數／金鑰（絕不進版控）
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+
+# 編輯器
+.vscode/
+.idea/
+*.swp
+
+# 暫存
+*.log
+tmp/
